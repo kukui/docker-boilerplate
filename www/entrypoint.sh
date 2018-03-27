@@ -9,9 +9,9 @@ if [ "$SSL" == "1" ]; then
         echo "############################################################"
         ls -lh /etc/ssl/private/
     fi
-    to_link='00-default-ssl.conf 20-ssl-redirects.conf 30-static-and-app-ssl.conf'
+    to_link='00-default-ssl.conf 20-ssl-redirects.conf 30-static-and-api-ssl.conf'
 else
-    to_link='00-default.conf 30-static-and-app.conf'
+    to_link='00-default.conf 30-static-and-api.conf'
 fi
 
 # remove any files from previous builds

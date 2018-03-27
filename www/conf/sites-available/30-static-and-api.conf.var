@@ -11,13 +11,13 @@ server {
 	######
 	# Pass API requests to an API server
 	######
-	location /app/ {
+	location /api/ {
 		# client applications become more powerful
 		expires epoch;
 		etag off;
 		add_header Strict-Transport-Security "max-age=31536000";
+		uwsgi_pass api;
 		include uwsgi_params;
-		uwsgi_pass app;
 	}
 	
 	######
