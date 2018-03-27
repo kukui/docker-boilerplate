@@ -6,4 +6,4 @@ RUN pip3 install --upgrade pip
 WORKDIR /api
 COPY . /api
 RUN pip3 install -r requirements.txt
-CMD ["tail", "-f", "/dev/null"]
+CMD ["/api/entrypoint.sh"]

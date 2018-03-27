@@ -72,5 +72,4 @@ services:
       - redis 
     volumes:
         - ./api:/api
-
-    command: ["tail", "-f", "/dev/null"]
+    command: ["/api/entrypoint.sh"]
