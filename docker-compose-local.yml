@@ -1,0 +1,76 @@
+version: "3.6"
+
+secrets:
+    POSTGRES_PASSWORD:
+        file: ./secrets/${ENVIRONMENT}/postgres_password
+    POSTGRES_USER:
+        file: ./secrets/${ENVIRONMENT}/postgres_user
+    POSTGRES_DB:
+        file: ./secrets/${ENVIRONMENT}/postgres_db
+    POSTGRES_HOST:
+        file: ./secrets/${ENVIRONMENT}/postgres_host
+    API_CONFIG:
+        file: ./secrets/${ENVIRONMENT}/api_config
+
+services:
+  www:
+    build: ./www
+    image: ${REPO}/docker-flask-www:${TAG-latest}
+    depends_on:
+      - db
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+      SSL: ${SSL}
+    volumes:
+        - ./www/certs:/etc/ssl/private
+  static:
+    build: ./static
+    image: ${REPO}/docker-flask-static:${TAG-latest}
+    environment:
+      DOMAIN: ${DOMAIN}
+
+  redis:
+    build: ./redis
+    ports:
+      - "6379:6379"
+    image: ${REPO}/docker-flask-redis:${TAG-latest}
+    restart: always
+  db:
+    build: ./db
+    image: ${REPO}/docker-flask-db:${TAG-latest}
+    ports:
+      - "5432:5432"
+    restart: always
+    secrets:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+    environment:
+      POSTGRES_USER_FILE: /run/secrets/POSTGRES_USER
+      POSTGRES_DB_FILE:  /run/secrets/POSTGRES_DB
+      POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
+  api:
+    build: ./api
+    image: ${REPO}/docker-flask-api:${TAG-latest}
+    depends_on:
+      - db
+      - redis
+    secrets:
+      - API_CONFIG
+    environment:
+      FLASK_APP: /api/manage.py
+      API_CONFIG: /run/secrets/API_CONFIG
+      DB_HOST: ${DB_HOST-db}
+      PYTHONPATH: /
+    ports:
+        - "3031:3031"
+    links:
+      - db
+      - redis 
+    volumes:
+        - ./api:/api
+
+    command: ["tail", "-f", "/dev/null"]

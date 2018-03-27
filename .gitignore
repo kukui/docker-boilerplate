@@ -1,0 +1,8 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+www/conf/sites-available/*.conf
+www/certs/*
+environments/*
+secrets/*
+src/*
+.pytest_cache
