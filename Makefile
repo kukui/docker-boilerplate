@@ -1,5 +1,7 @@
 SHELL :=/bin/bash
-ENVIRONMENT ?= local
+ifndef ENVIRONMENT
+$(error ENVIRONMENT is not set)
+endif
 BRANCH := $(shell git branch)
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
 ENV_VARS := $(shell cat environments/$(ENVIRONMENT) | grep -v ^\# | xargs)
@@ -59,7 +61,6 @@ pull:
 	$(foreach img,$(IMAGES), docker pull $(img);)
 
 .PHONY: swarmdown
-pull:
 swarmdown:
 	-docker swarm leave --force
 
@@ -69,16 +70,19 @@ swarmup: swarmdown
 	$(ENV_VARS) docker stack deploy -c $(COMPOSE_FILE) $(ENVIRONMENT)
 
 .PHONY: du
-du: 
+dcu: 
 	$(ENV_VARS) docker-compose -f $(COMPOSE_FILE) up -d 
 
 .PHONY: ds
-ds: 
+dcs: 
 	$(ENV_VARS) docker-compose -f $(COMPOSE_FILE) down
 
 .PHONY: dd
-dd: 
+dcd: 
 	$(ENV_VARS) docker-compose -f $(COMPOSE_FILE) down
+
+dps: 
+	@ $(ENV_VARS) docker-compose -f $(COMPOSE_FILE) ps 
 
 .PHONY: 
 de:
@@ -87,4 +91,8 @@ de:
 .PHONY: cert
 cert:
 	$(ENV_VARS) www/cert.sh
+
+dctest:
+	bats/bin/bats --tap tests/docker-compose.bats
+
 
