@@ -1,0 +1,20 @@
+[
+{"ParameterKey": "ClusterSize", "ParameterValue": "5"},
+{"ParameterKey": "EnableCloudStorEfs", "ParameterValue": "no"},
+{"ParameterKey": "EnableCloudWatchLogs", "ParameterValue": "yes"},
+{"ParameterKey": "EnableEbsOptimized", "ParameterValue": "no"},
+{"ParameterKey": "EnableSystemPrune", "ParameterValue": "yes"},
+{"ParameterKey": "EncryptEFS", "ParameterValue": "false"},
+{"ParameterKey": "InstanceType", "ParameterValue": "t2.micro"},
+{"ParameterKey": "KeyName", "ParameterValue": "kai"},
+{"ParameterKey": "ManagerDiskSize", "ParameterValue": "20"},
+{"ParameterKey": "ManagerDiskType", "ParameterValue": "standard"},
+{"ParameterKey": "ManagerInstanceType", "ParameterValue": "t2.micro"},
+{"ParameterKey": "ManagerSize", "ParameterValue": "3"},
+{"ParameterKey": "WorkerDiskSize", "ParameterValue": "20"},
+{"ParameterKey": "DBUSER", "ParameterValue": "postgres"},
+{"ParameterKey": "DBPASSWORD", "ParameterValue": "postgres"},
+{"ParameterKey": "DBNAME", "ParameterValue": "postgres"},
+{"ParameterKey": "DBCLASS", "ParameterValue": "db.t2.medium"},
+{"ParameterKey": "DBALLOCATEDSTORAGE", "ParameterValue": "20"}
+]

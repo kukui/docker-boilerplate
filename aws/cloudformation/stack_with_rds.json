@@ -1,0 +1,98 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "This template creates a swarm and an RDS database",
+  "Parameters": {
+    "DBNAME": { "Type": "String" },
+    "DBUSER": { "Type": "String" },
+    "DBPASSWORD": { "Type": "String" },
+    "DBCLASS": { "Type": "String" },
+    "DBALLOCATEDSTORAGE": { "Type": "String" },
+    "ClusterSize": {"Type":"String"},
+    "EnableCloudStorEfs":{"Type":"String"},
+    "EnableCloudWatchLogs":{"Type":"String"},
+    "EnableEbsOptimized":{"Type":"String"},
+    "EnableSystemPrune":{"Type":"String"},
+    "EncryptEFS":{"Type":"String"},
+    "InstanceType":{"Type":"String"},
+    "KeyName":{"Type":"String"},
+    "ManagerDiskSize":{"Type":"String"},
+    "ManagerDiskType":{"Type":"String"},
+    "ManagerInstanceType":{"Type":"String"},
+    "ManagerSize":{"Type":"String"},
+    "WorkerDiskSize":{"Type":"String"}
+  },
+  "Resources": {
+    "swarm": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://io.kukui.cloudformation.s3.amazonaws.com/docker_swarm.json",
+        "Parameters": {
+            "ClusterSize": {"Ref":"ClusterSize"},
+            "EnableCloudStorEfs":{"Ref":"EnableCloudStorEfs"},
+            "EnableCloudWatchLogs":{"Ref":"EnableCloudWatchLogs"},
+            "EnableEbsOptimized":{"Ref":"EnableEbsOptimized"},
+            "EnableSystemPrune":{"Ref":"EnableSystemPrune"},
+            "EncryptEFS":{"Ref":"EncryptEFS"},
+            "InstanceType":{"Ref":"InstanceType"},
+            "KeyName":{"Ref":"KeyName"},
+            "ManagerDiskSize":{"Ref":"ManagerDiskSize"},
+            "ManagerDiskType":{"Ref":"ManagerDiskType"},
+            "ManagerInstanceType":{"Ref":"ManagerInstanceType"},
+            "ManagerSize":{"Ref":"ManagerSize"},
+            "WorkerDiskSize":{"Ref":"WorkerDiskSize"}
+        }
+      }
+    },
+    "dbsubnetgroup": {
+      "Type": "AWS::RDS::DBSubnetGroup",
+      "DependsOn": ["swarm"],
+      "Properties" : {
+        "DBSubnetGroupDescription" : "Subnet Group Glue to swarm",
+        "DBSubnetGroupName" : "swarmdb",
+        "SubnetIds" : {
+          "Fn::Split": [",",
+              "Fn::GetAtt": [
+                "swarm",
+                "Outputs.SubnetIds"
+              ]
+            ]
+          }
+      }
+    },
+    "postgressecuritygroup": {
+        "Type" : "AWS::EC2::SecurityGroup",
+        "Properties" : {
+           "GroupName" : "postgres-access",
+           "GroupDescription" : "access to postgres",
+           "SecurityGroupEgress" : [{
+              "IpProtocol": "-1",
+              "FromPort": "0",
+              "ToPort": "65535",
+              "CidrIp": "0.0.0.0/0"
+           }],
+           "SecurityGroupIngress" : [{
+              "IpProtocol": "tcp",
+              "FromPort": "5432",
+              "ToPort": "5432",
+              "CidrIp": {"Fn::GetAtt": ["swarm", "Outputs.VPCCIDR"]}
+           }],
+           "VpcId" : {"Fn::GetAtt": ["swarm", "Outputs.VPCID"]}
+        }
+    },
+    "postgres": {
+      "Type": "AWS::RDS::DBInstance",
+      "DependsOn": ["swarm", "dbsubnetgroup"],
+      "Properties": {
+        "DBName": { "Ref": "DBNAME" },
+        "Engine": "postgres",
+        "MultiAZ": false,
+        "MasterUsername": { "Ref": "DBUSER" },
+        "DBInstanceClass": { "Ref": "DBCLASS" },
+        "AllocatedStorage": { "Ref": "DBALLOCATEDSTORAGE" },
+        "MasterUserPassword": { "Ref": "DBPASSWORD" },
+        "DBSubnetGroupName": "swarmdb",
+        "VPCSecurityGroups": [{"Ref": "postgressecuritygroup"}]
+      }
+    }
+  }
+}
