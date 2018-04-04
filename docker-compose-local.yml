@@ -13,9 +13,17 @@ secrets:
         file: ./secrets/${ENVIRONMENT}/api_config
 
 services:
+  registry:
+    build: ./registry
+    image: dfb-registry:${TAG-latest}
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./registry/data:/var/lib/registry
+
   www:
     build: ./www
-    image: ${REPO}/docker-flask-www:${TAG-latest}
+    image: dfb-www:${TAG-latest}
     depends_on:
       - db
     ports:
@@ -28,7 +36,7 @@ services:
         - ./www/certs:/etc/ssl/private
   static:
     build: ./static
-    image: ${REPO}/docker-flask-static:${TAG-latest}
+    image: dfb-static:${TAG-latest}
     environment:
       DOMAIN: ${DOMAIN}
 
@@ -36,11 +44,11 @@ services:
     build: ./redis
     ports:
       - "6379:6379"
-    image: ${REPO}/docker-flask-redis:${TAG-latest}
+    image: dfb-redis:${TAG-latest}
     restart: always
   db:
     build: ./db
-    image: ${REPO}/docker-flask-db:${TAG-latest}
+    image: dfb-db:${TAG-latest}
     ports:
       - "5432:5432"
     restart: always
@@ -54,7 +62,7 @@ services:
       POSTGRES_PASSWORD_FILE: /run/secrets/POSTGRES_PASSWORD
   api:
     build: ./api
-    image: ${REPO}/docker-flask-api:${TAG-latest}
+    image: dfb-api:${TAG-latest}
     depends_on:
       - db
       - redis
