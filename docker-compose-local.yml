@@ -11,6 +11,8 @@ secrets:
         file: ./secrets/${ENVIRONMENT}/postgres_host
     API_CONFIG:
         file: ./secrets/${ENVIRONMENT}/api_config
+    API_SECRET_KEY:
+      file: secrets/${ENVIRONMENT}/api_secret_key
 
 services:
   registry:
@@ -82,3 +84,29 @@ services:
         - ./api:/api
     command: ["/api/entrypoint.sh"]
 
+  djapi:
+    build: ./djapi
+    image: dfb-djapi:${TAG-latest}
+    depends_on:
+      - db
+      - redis
+    secrets:
+    - POSTGRES_PASSWORD
+    - API_SECRET_KEY
+    environment:
+      API_CONFIG: /run/secrets/API_CONFIG
+      DB_HOST: ${DB_HOST-db}
+      DOMAIN: ${DOMAIN}
+      DB_USER: ${DB_USER-postgres}
+      DB_NAME: ${DB_NAME-postgres}
+      DB_HOST: ${DB_HOST-db}
+      PYTHONPATH: /
+    ports:
+        - "3032:3032"
+    links:
+      - db
+      - redis 
+    volumes:
+        - ./djapi:/djapi
+    # command: ["/djapi/entrypoint.sh"]
+    command: ["tail", "-f", "/dev/null"]
