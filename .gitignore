@@ -5,4 +5,5 @@ www/certs/*
 environments/*
 secrets/*
 src/*
+registry/data
 .pytest_cache
