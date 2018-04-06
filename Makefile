@@ -3,7 +3,7 @@
 ENVIRONMENT ?= local
 include environments/$(ENVIRONMENT)
 export $(shell sed 's/=.*//' environments/$(ENVIRONMENT))
-export COMPOSE_FILE=docker-compose-$(ENVIRONMENT).yml
+export COMPOSE_FILE=docker-compose.yml
 ENV_VARS = $(shell grep '=' environments/$(ENVIRONMENT))
 REQUIRED_ENV := ENVIRONMENT DOCKER_REPO COMPOSE_PROJECT_NAME DOMAIN SSL
 MISSING_ENV := $(filter-out $(.VARIABLES), $(REQUIRED_ENV))
@@ -12,7 +12,7 @@ ifneq (,$(MISSING_ENV))
 	$(error missing environment variables [$(MISSING_ENV)])
 endif
 
-SERVICES ?= $(shell cat docker-compose-$(ENVIRONMENT).yml|  python3 -c  'import sys, yaml, json; y=yaml.load(sys.stdin.read()); print(json.dumps(y))' | jq -r '.services | keys | join(" ")')
+SERVICES ?= $(shell cat $(COMPOSE_FILE) |  python3 -c  'import sys, yaml, json; y=yaml.load(sys.stdin.read()); print(json.dumps(y))' | jq -r '.services | keys | join(" ")')
 # Required executables
 REQUIRED_PROGRAMS = bash git docker docker-compose
 
