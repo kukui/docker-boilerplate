@@ -1,7 +1,17 @@
+sudo: required
+
 env:
   DOCKER_COMPOSE_VERSION: 3.6
   DOCKER_VERSION: 18.03.0
-sudo: required
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - sudo apt-get update
+  - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
+
 
 services:
   - docker
