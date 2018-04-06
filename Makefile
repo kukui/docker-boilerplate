@@ -4,16 +4,15 @@ ENVIRONMENT ?= local
 include environments/$(ENVIRONMENT)
 export $(shell sed 's/=.*//' environments/$(ENVIRONMENT))
 export COMPOSE_FILE=docker-compose-$(ENVIRONMENT).yml
-
+ENV_VARS = $(shell grep '=' environments/$(ENVIRONMENT))
 REQUIRED_ENV := ENVIRONMENT DOCKER_REPO COMPOSE_PROJECT_NAME DOMAIN SSL
-ALL_ENV := $(.VARIABLES)
-MISSING_ENV := $(filter-out $(ALL_ENV), $(REQUIRED_ENV))
+MISSING_ENV := $(filter-out $(.VARIABLES), $(REQUIRED_ENV))
 
 ifneq (,$(MISSING_ENV))
 	$(error missing environment variables [$(MISSING_ENV)])
 endif
 
-SERVICES ?=  $(shell cat docker-compose-local.yml|  python3 -c  'import sys, yaml, json; y=yaml.load(sys.stdin.read()); print(json.dumps(y))' | jq -r '.services | keys | join(" ")')
+SERVICES ?= $(shell cat docker-compose-$(ENVIRONMENT).yml|  python3 -c  'import sys, yaml, json; y=yaml.load(sys.stdin.read()); print(json.dumps(y))' | jq -r '.services | keys | join(" ")')
 # Required executables
 REQUIRED_PROGRAMS = bash git docker docker-compose
 
@@ -21,7 +20,8 @@ GIT := $(shell command -v git 2> /dev/null)
 SHELL :=/bin/bash
 BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 COMMIT_HASH := $(shell git rev-parse --short HEAD)
-IMAGES ?= $(shell docker-compose config | grep 'image: ' | tr -d ' ' | cut -d ':' -f2 | xargs)
+IMAGES ?= $(shell $(ENV_VARS) docker-compose -f $(COMPOSE_FILE) config | grep 'image: ' | tr -d ' ' | cut -d ':' -f2 | xargs)
+
 REPO_IMAGES ?= $(foreach img, $(IMAGES), $(DOCKER_REPO)/$(img);)
 REPO_COMMANDS := $(foreach repo_img,$(REPO_IMAGES), $(foreach(tag, $(TAGS), docker tag $(repo_img) $(tag))))
 RELEASE := $(shell $(ENV_VARS) head -n 1 RELEASE_NOTES | cut -d ' ' -f2)
