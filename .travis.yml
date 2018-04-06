@@ -4,4 +4,4 @@ services:
   - docker
 
 script:
-  make dctest
+  ENVIRONMENT=travis make dctest
