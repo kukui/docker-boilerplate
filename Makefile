@@ -104,7 +104,7 @@ dcps:
 dcd:  ## stop docker instances launched using docker-compose
 	-docker-compose down
 
-.PHONY: 
+.PHONY: dce 
 dce: ## bring down docker-compose and remove all images and volumes
 	docker-compose down --rmi all -v 
 
@@ -112,9 +112,11 @@ dce: ## bring down docker-compose and remove all images and volumes
 cert: ## generate a self-signed ssl certificate for development
 	www/cert.sh
 
+.PHONY: dctest
 dctest: dcd dcu ## run bats tests on docker-compose
 	bats --tap tests/docker-compose.bats
 
+.PHONY: swarmtest
 swarmtest: ## run bats tests on docker swarm
 	bats --tap tests/docker-swarm.bats
 
