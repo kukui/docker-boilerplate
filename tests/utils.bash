@@ -1,8 +1,10 @@
 #!/bin/bash
 
 docker_service_status () {
+echo "service $service"
 export $(cat environments/$ENVIRONMENT | grep -v ^# | xargs)
 container_id=$(docker-compose  ps -q $service)
+echo "container id $container_id"
 inspect_json=$(docker inspect $container_id)
 status=$(echo "$inspect_json" | jq -r '{running: .[1].State.Running, ports: .[0].NetworkSettings.Ports | keys| join(",")|test("3031/tcp")}| .running and .ports')
 return 0

@@ -113,7 +113,7 @@ cert: ## generate a self-signed ssl certificate for development
 	www/cert.sh
 
 .PHONY: dctest
-dctest: dcd dcu ## run bats tests on docker-compose
+dctest: ## run bats tests on docker-compose
 	bats --tap tests/docker-compose.bats
 
 .PHONY: swarmtest
