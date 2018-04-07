@@ -5,6 +5,10 @@ env:
   DOCKER_VERSION: 18.03.0
   ENVIRONMENT: travis
 
+services:
+  - docker
+
+
 before_install:
   - sudo rm /usr/local/bin/docker-compose
   - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
@@ -13,15 +17,10 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   - sudo apt-get -y install tree
+  - cd $TRAVIS_REPO_SLUG
 
 install:
-  - git clone https://github.com/$TRAVIS_REPO_SLUG.git $TRAVIS_REPO_SLUG
-  - cd $TRAVIS_REPO_SLUG
-  - git checkout -qf $TRAVIS_COMMIT
   - tree
-  - make build
-services:
-  - docker
-
+  - ENVIRONMENT=travis make build
 script:
   ENVIRONMENT=travis make dctest
