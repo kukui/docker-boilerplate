@@ -25,5 +25,7 @@ before_install:
 install:
   - tree
   - ENVIRONMENT=travis make build
+  - ENVIRONMENT=travis make dctest
+
 script:
-  ENVIRONMENT=travis make dctest
+  ENVIRONMENT=travis docker ps
