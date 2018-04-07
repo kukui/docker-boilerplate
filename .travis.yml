@@ -13,13 +13,13 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   - sudo apt-get -y install tree
-  - cd docker-boilerplate && make build
 
 install:
   - git clone https://github.com/$TRAVIS_REPO_SLUG.git $TRAVIS_REPO_SLUG
   - cd $TRAVIS_REPO_SLUG
   - git checkout -qf $TRAVIS_COMMIT
   - tree
+  - make build
 services:
   - docker
 
