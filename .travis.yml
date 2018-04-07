@@ -21,7 +21,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
-  - sudo apt-get -y install tree
+  - sudo apt-get -y install tree python3-pip
   - pip3 install pyyaml
   - make build
 install:
