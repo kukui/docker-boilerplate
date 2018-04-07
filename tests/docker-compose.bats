@@ -1,8 +1,6 @@
 setup () {
     load utils
     export $(cat environments/$ENVIRONMENT | grep -v ^# | xargs)
-    make dcd
-    make dcu
 }
 
 teardown () {
