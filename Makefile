@@ -113,8 +113,8 @@ cert: ## generate a self-signed ssl certificate for development
 	www/cert.sh
 
 dctest: ## run bats tests on docker-compose
-	bats/bin/bats --tap tests/docker-compose.bats
+	bats --tap tests/docker-compose.bats
 
 swarmtest: ## run bats tests on docker swarm
-	bats/bin/bats --tap tests/docker-swarm.bats
+	bats --tap tests/docker-swarm.bats
 
