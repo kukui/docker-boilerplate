@@ -22,7 +22,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce
   - sudo apt-get -y install tree python3-pip
-  - pip3 install pyyaml
+  - sudo python3 -m easy_install pyyaml
   - make build
 install:
   - ENVIRONMENT=travis make dctest
