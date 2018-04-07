@@ -25,6 +25,7 @@ before_install:
   - make build
 install:
   - ENVIRONMENT=travis make dctest
+  - ENVIRONMENT=travis make swarmtest
 
 script:
   ENVIRONMENT=travis docker ps
