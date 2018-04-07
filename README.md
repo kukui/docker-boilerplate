@@ -1,4 +1,4 @@
-docker-flask-boilerplate
+docker-flask-boilerplate [![Build Status](https://travis-ci.org/kukui/docker-boilerplate.svg?branch=master)](https://travis-ci.org/kukui/docker-boilerplate)
 ========================
 A Docker based flask restful api boilerplate for quick starting projects.
 AWS Cloudformation templates for deploying to a swarm on AWS are included
