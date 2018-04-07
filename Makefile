@@ -1,5 +1,4 @@
 # Required environment variables
-#
 ENVIRONMENT ?= local
 include environments/$(ENVIRONMENT)
 export $(shell sed 's/=.*//' environments/$(ENVIRONMENT))
