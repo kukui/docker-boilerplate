@@ -5,6 +5,7 @@ setup () {
 }
 
 teardown () {
+    export $(cat environments/$ENVIRONMENT | grep -v ^# | xargs)
     make dcd
 }
 
